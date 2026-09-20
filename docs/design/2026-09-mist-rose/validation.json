@@ -1,0 +1,16 @@
+{
+  "scope": "isolated existing SVG reproduction and proposed palette only; not full application or new Live2D model",
+  "source_commit": "046564cea422d7edeee686f5c3b404090d15e6f6",
+  "chromium": "144.0.7559.96",
+  "checks": {
+    "original_svg_instances": 7,
+    "pointer_offset_100_100_produces_saturation": true,
+    "javascript_page_errors": 0
+  },
+  "proposed_palette_contrast": [
+    {"foreground": "#FFFFFF", "background": "#A85F77", "ratio": 4.6},
+    {"foreground": "#344657", "background": "#FBF9F7", "ratio": 9.26},
+    {"foreground": "#68788A", "background": "#FFFFFF", "ratio": 4.52},
+    {"foreground": "#89556A", "background": "#F4E7EC", "ratio": 4.9}
+  ]
+}

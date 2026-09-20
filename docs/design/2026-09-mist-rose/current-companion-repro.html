@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TraceDigest · 046564c 现有人偶隔离复现</title>
+<style>
+*{box-sizing:border-box}body{margin:0;padding:32px;background:#fbf9f7;color:#344657;font:15px/1.65 system-ui,'Microsoft YaHei',sans-serif}main{max-width:1080px;margin:auto}h1{font-size:25px;margin:0 0 8px}p{margin:0 0 18px}.note{font-size:13px;color:#626f7c}.poses{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.card{border:1px solid #e1e6eb;background:white;border-radius:14px;padding:20px}.card h2{font-size:17px;margin:0}.card code{font-size:12px}.display{display:flex;align-items:end;gap:20px;min-height:324px;padding-top:18px;overflow:hidden}.zoom{width:192px;height:252px;flex-shrink:0}.zoom .app-companion{transform:scale(2);transform-origin:top left}.actual{width:96px;height:126px;flex-shrink:0}a{color:#89556a}.live-stage{position:relative;height:280px;margin-top:24px;border:1px dashed #bcc8d3;border-radius:14px;background:#f0f5f8;padding:18px}.live-stage .app-companion{position:absolute;left:18px;bottom:18px}.readout{float:right;padding:8px 12px;background:#fff;border-radius:10px;font:13px/1.7 ui-monospace,monospace}footer{margin-top:22px;font-size:13px}.app-companion{--companion-head-x:0px;--companion-head-y:0px;--companion-head-rotate:0deg;--companion-pupil-x:0px;--companion-pupil-y:0px;width:96px;height:126px;pointer-events:none;filter:drop-shadow(0 8px 10px rgba(93,67,73,.16))}.app-companion-art{display:block;width:100%;height:100%;overflow:visible}.app-companion-shadow{fill:rgba(93,67,73,.18)}.app-companion-body{stroke:#56484a;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.2}.app-companion-leg,.app-companion-arm{fill:#ffe5d9}.app-companion-sock,.app-companion-blouse,.app-companion-collar{fill:#fffcf6}.app-companion-shoe{fill:#6b4c4a}.app-companion-skirt{fill:#5c5961}.app-companion-pleat,.app-companion-notebook-line{fill:none;stroke:#89818a;stroke-width:.9}.app-companion-cardigan{fill:#bae7d5}.app-companion-bow{fill:none;stroke:#bf4e74;stroke-width:2.3;stroke-linecap:round}.app-companion-notebook{fill:#f8b4b0}.app-companion-head{transform-box:fill-box;transform-origin:50% 72%;transform:translate3d(var(--companion-head-x),var(--companion-head-y),0) rotate(var(--companion-head-rotate));transition:transform 180ms ease-out}.app-companion-hair-back,.app-companion-bangs{fill:#b48777;stroke:#56484a;stroke-linejoin:round;stroke-width:1.2}.app-companion-face{fill:#ffe5d9;stroke:#56484a;stroke-width:1.1}.app-companion-ear,.app-companion-hair-lock,.app-companion-brow,.app-companion-blush,.app-companion-mouth,.app-companion-hair-bow{fill:none;stroke:#56484a;stroke-linecap:round;stroke-linejoin:round}.app-companion-ear{stroke:#d4877d;stroke-width:1}.app-companion-hair-lock{stroke:#8d675e;stroke-width:1.4}.app-companion-brow{stroke-width:1}.app-companion-eye-white{fill:#fffcf6;stroke:#56484a;stroke-width:1}.app-companion-pupils{transform-box:fill-box;transform-origin:50% 50%;transform:translate3d(var(--companion-pupil-x),var(--companion-pupil-y),0);transition:transform 120ms ease-out}.app-companion-eye{fill:#bf4e74;stroke:#56484a;stroke-width:.8}.app-companion-eye-glint{fill:#fffcf6}.app-companion-blush{stroke:#f08b94;stroke-width:1.5}.app-companion-mouth{stroke:#bf4e74;stroke-width:1.2}.app-companion-hair-bow{fill:#bae7d5;stroke:#56484a;stroke-width:1}@media(max-width:1000px){.poses{grid-template-columns:1fr}.display{min-height:272px}}@media(prefers-reduced-motion:reduce){.app-companion-head,.app-companion-pupils{transition:none}}
+</style>
+</head>
+<body><main>
+<h1>现有人偶：中立与两个极限方向</h1>
+<p>这是提交 <code>046564c</code> 的原有 SVG 隔离复现，<strong>不是改造后的效果图</strong>。</p>
+<p class="note">每格左侧为 2 倍放大，右侧为原来的 96 × 126 CSS 像素。保留原始几何、颜色、头部与瞳孔变换；关闭整体上下漂浮，便于检查眼睛。未启动完整 Electron 应用。</p>
+<section class="poses" aria-label="原有人偶三个方向">
+<article class="card" data-x="0" data-y="0"><h2>正视</h2><code>x = 0, y = 0</code><div class="display"><div class="zoom"></div><div class="actual"></div></div></article>
+<article class="card" data-x="1" data-y="-1"><h2>右上极限</h2><code>x = +1, y = −1</code><div class="display"><div class="zoom"></div><div class="actual"></div></div></article>
+<article class="card" data-x="1" data-y="1"><h2>右下极限</h2><code>x = +1, y = +1</code><div class="display"><div class="zoom"></div><div class="actual"></div></div></article>
+</section>
+<section class="live-stage" aria-label="原始鼠标跟随算法复现">
+<strong>在页面内移动鼠标</strong><output class="readout" aria-label="归一化方向">x = 0.00<br>y = 0.00</output>
+<p class="note">这个区域使用原始归一化算法：相对人偶中心，除以人偶自身半宽 / 半高。<br>鼠标离开小人偶的矩形范围后，对应方向就会达到 ±1。</p>
+<div id="live"></div>
+</section>
+<footer>来源：<a href="https://github.com/Bluuok/TraceDigest/blob/046564cea422d7edeee686f5c3b404090d15e6f6/src/renderer/src/components/layout/AppShell.tsx">AppShell.tsx</a> 与 <a href="https://github.com/Bluuok/TraceDigest/blob/046564cea422d7edeee686f5c3b404090d15e6f6/src/renderer/src/styles/foundation.scss">foundation.scss</a>。本页没有应用级路由、数据库或模型服务。</footer>
+</main>
+<template id="doll">
+<div class="app-companion" aria-hidden="true"><svg class="app-companion-art" viewBox="0 0 120 150" focusable="false">
+<ellipse class="app-companion-shadow" cx="60" cy="145" rx="28" ry="4"/>
+<g class="app-companion-body">
+<path class="app-companion-leg" d="M49 103c-1 10-3 18-7 28l8 2c5-10 8-18 10-28Z"/>
+<path class="app-companion-leg" d="M68 104c0 10 2 18 6 27l8-2c-3-11-4-19-4-28Z"/>
+<path class="app-companion-sock" d="m40 127 10 3-3 8-11-3Z"/><path class="app-companion-sock" d="m74 128 9-2 3 8-10 3Z"/>
+<path class="app-companion-shoe" d="M35 135c4-4 10-4 15 0l3 7c-5 4-15 3-20-1Z"/><path class="app-companion-shoe" d="M74 136c5-3 11-2 15 2l1 5c-6 3-15 2-20-2Z"/>
+<path class="app-companion-skirt" d="M38 85c7-3 37-3 44 0l8 25c-15 7-45 7-60 0Z"/>
+<path class="app-companion-pleat" d="m48 86 3 23M60 85v26M71 86l-3 24M81 88l-8 21"/>
+<path class="app-companion-blouse" d="M44 61c8-4 24-4 32 0l7 28c-12 5-33 5-46 0Z"/>
+<path class="app-companion-cardigan" d="M43 62c-7 1-13 7-16 17l8 15 9-5 3-17Z"/><path class="app-companion-cardigan" d="M77 62c7 1 13 7 16 17l-8 15-9-5-3-17Z"/>
+<path class="app-companion-cardigan" d="M42 60c-2 9-2 29 2 36l10-4-3-32Z"/><path class="app-companion-cardigan" d="M78 60c2 9 2 29-2 36l-10-4 3-32Z"/>
+<path class="app-companion-collar" d="m48 61 12 9 12-9 4 6-16 9-16-9Z"/>
+<path class="app-companion-bow" d="m55 69-9-3-3 5 10 4m14-6 9-3 3 5-10 4m-7-5v9"/>
+<path class="app-companion-arm" d="M35 78c5 5 10 8 16 10l-3 7c-8-2-14-7-19-13Z"/><path class="app-companion-arm" d="M85 77c-3 3-5 7-7 12l7 3c4-6 6-10 7-15Z"/>
+<path class="app-companion-notebook" d="m43 76 16 7-5 17-16-7Z"/><path class="app-companion-notebook-line" d="m44 80 12 5m-13-1 11 5m-12-1 10 5"/>
+</g>
+<g class="app-companion-head">
+<path class="app-companion-hair-back" d="M25 43c-5-17 6-32 22-36 19-5 39 4 46 20 6 14 2 31-9 40l-9-7H42l-10 8c-7-6-6-16-7-25Z"/>
+<path class="app-companion-face" d="M34 34c0-13 10-22 26-22s26 9 26 22v14c0 14-11 24-26 24S34 62 34 48Z"/>
+<path class="app-companion-ear" d="M34 42c-6-2-8 3-5 8 2 3 5 3 7 2m48-10c6-2 8 3 5 8-2 3-5 3-7 2"/>
+<path class="app-companion-bangs" d="M31 35c2-16 14-24 29-24 15 0 25 7 30 19-8-6-13-9-19-10 1 6 0 11-3 16-4-6-8-9-12-12-2 7-8 13-16 17l-1-8Z"/>
+<path class="app-companion-hair-lock" d="M29 38c-5 8-4 19 3 27m59-28c5 8 4 19-3 27"/>
+<path class="app-companion-brow" d="M43 40c3-2 6-2 9 0m16 0c3-2 6-2 9 0"/>
+<ellipse class="app-companion-eye-white" cx="48" cy="47" rx="7" ry="6"/><ellipse class="app-companion-eye-white" cx="72" cy="47" rx="7" ry="6"/>
+<g class="app-companion-pupils"><ellipse class="app-companion-eye" cx="48" cy="47" rx="4.2" ry="4.8"/><ellipse class="app-companion-eye" cx="72" cy="47" rx="4.2" ry="4.8"/><circle class="app-companion-eye-glint" cx="46.5" cy="45" r="1.35"/><circle class="app-companion-eye-glint" cx="70.5" cy="45" r="1.35"/></g>
+<path class="app-companion-blush" d="M39 56c3 2 5 2 8 0m26 0c3 2 5 2 8 0"/><path class="app-companion-mouth" d="M55 57c3 3 7 3 10 0"/>
+<path class="app-companion-hair-bow" d="m79 23 8-6 4 5-9 7m-4-6-8-6-4 5 9 7m2-4 2 8"/>
+</g></svg></div>
+</template>
+<script>
+// This intentionally preserves the old pose/normalization formula for diagnosis.
+const template = document.querySelector('#doll');
+function applyPose(root, x, y) {
+ root.style.setProperty('--companion-head-x', `${(x * 3.2).toFixed(2)}px`);
+ root.style.setProperty('--companion-head-y', `${(y * 2.4).toFixed(2)}px`);
+ root.style.setProperty('--companion-head-rotate', `${(x * 4).toFixed(2)}deg`);
+ root.style.setProperty('--companion-pupil-x', `${(x * 2.1).toFixed(2)}px`);
+ root.style.setProperty('--companion-pupil-y', `${(y * 1.7).toFixed(2)}px`);
+}
+for (const card of document.querySelectorAll('.card')) {
+ for (const mount of card.querySelectorAll('.zoom,.actual')) {
+  mount.append(template.content.cloneNode(true));
+  applyPose(mount.firstElementChild, Number(card.dataset.x), Number(card.dataset.y));
+ }
+}
+document.querySelector('#live').append(template.content.cloneNode(true));
+const root = document.querySelector('#live .app-companion');
+const output = document.querySelector('.readout');
+let frame = 0;
+if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+ window.addEventListener('pointermove', (event) => {
+  if (event.pointerType === 'touch') return;
+  window.cancelAnimationFrame(frame);
+  frame = window.requestAnimationFrame(() => {
+   const rect = root.getBoundingClientRect();
+   const cx = rect.left + rect.width / 2;
+   const cy = rect.top + rect.height / 2;
+   const x = Math.max(-1, Math.min(1, (event.clientX - cx) / (rect.width / 2)));
+   const y = Math.max(-1, Math.min(1, (event.clientY - cy) / (rect.height / 2)));
+   applyPose(root, x, y);
+   output.innerHTML = `x = ${x.toFixed(2)}<br>y = ${y.toFixed(2)}`;
+  });
+ }, {passive:true});
+ window.addEventListener('blur', () => { applyPose(root, 0, 0); });
+}
+</script></body></html>
