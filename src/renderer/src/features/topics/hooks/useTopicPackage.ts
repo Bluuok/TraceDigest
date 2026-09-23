@@ -29,16 +29,7 @@ function statusForPackage(pkg: TopicPackage | null): TopicStatus {
   return pkg.evidences.length === 0 ? 'empty' : 'success'
 }
 
-export function useTopicPackage(groupId: string): {
-  status: TopicStatus
-  pkg: TopicPackage | null
-  bundle: TopicBundle | null
-  fromCache: boolean
-  error: TopicError | null
-  sourceLoading: boolean
-  sourceMessage: TopicSourceMessage | null
-  sourceError: TopicError | null
-  activeLocator: TopicSourceLocator | null
+export function useTopicPackage(groupId: string): TopicPackageSnapshot & {
   generate: (query: TopicQuery, forceRefresh?: boolean) => Promise<boolean>
   fetchSource: (locator: TopicSourceLocator) => Promise<void>
   loadBundle: (bundle: TopicBundle) => void
@@ -61,18 +52,7 @@ export function useTopicPackage(groupId: string): {
   const sourceSeqRef = React.useRef(0)
   const currentGroupRef = React.useRef(groupId)
   const snapshotsRef = React.useRef(new Map<string, TopicPackageSnapshot>())
-  const currentSnapshotRef = React.useRef<TopicPackageSnapshot>({
-    status,
-    pkg,
-    bundle,
-    fromCache,
-    error,
-    sourceLoading,
-    sourceMessage,
-    sourceError,
-    activeLocator
-  })
-  currentSnapshotRef.current = {
+  const snapshot: TopicPackageSnapshot = {
     status,
     pkg,
     bundle,
@@ -83,6 +63,8 @@ export function useTopicPackage(groupId: string): {
     sourceError,
     activeLocator
   }
+  const currentSnapshotRef = React.useRef(snapshot)
+  currentSnapshotRef.current = snapshot
 
   const clearSource = React.useCallback(() => {
     sourceSeqRef.current += 1
@@ -160,17 +142,7 @@ export function useTopicPackage(groupId: string): {
         setBundle(result.bundle)
         setFromCache(result.fromCache)
 
-        // Check for empty or AI failed states
-        if (
-          result.package.notices.some((n) => n.code === 'AI_FAILED') ||
-          result.package.review === 'unavailable'
-        ) {
-          setStatus('ai_failed')
-        } else if (result.package.evidences.length === 0) {
-          setStatus('empty')
-        } else {
-          setStatus('success')
-        }
+        setStatus(statusForPackage(result.package))
         return true
       } catch (cause) {
         if (seq !== generateSeqRef.current || currentGroupRef.current !== query.groupId)
@@ -227,17 +199,11 @@ export function useTopicPackage(groupId: string): {
       generateSeqRef.current += 1
       sourceSeqRef.current += 1
       setBundle(loadedBundle)
-      const isAiFailed = loadedBundle.review === 'unavailable'
-      setPkg(projectTopicPackage(loadedBundle))
+      const projected = projectTopicPackage(loadedBundle)
+      setPkg(projected)
       setFromCache(true)
       clearSource()
-      if (isAiFailed) {
-        setStatus('ai_failed')
-      } else if (loadedBundle.evidence.length === 0) {
-        setStatus('empty')
-      } else {
-        setStatus('success')
-      }
+      setStatus(statusForPackage(projected))
     },
     [clearSource]
   )
